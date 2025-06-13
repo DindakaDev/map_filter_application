@@ -1,4 +1,4 @@
-package com.dindaka.mapsfilterapplication.ui.theme
+package com.dindaka.mapsfilterapplication.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
