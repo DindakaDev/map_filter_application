@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -33,6 +34,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.dindaka.mapsfilterapplication.R
 import com.dindaka.mapsfilterapplication.data.model.CityData
 import com.dindaka.mapsfilterapplication.data.model.StateManager
@@ -43,15 +48,20 @@ fun CityListScreen(
     onItemClick: (CityData) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    when (uiState) {
-        StateManager.Loading -> LoadingComponent()
-        is StateManager.Error -> ErrorComponent((uiState as StateManager.Error).message)
-        is StateManager.Success -> CitiesListComponent(
-            viewModel,
-            (uiState as StateManager.Success).data,
-            onItemClick
-        )
-    }
+    CitiesListComponent(
+        viewModel,
+        onItemClick
+    )
+    /*when (uiState) {
+        Loading -> LoadingComponent()
+        is Error -> ErrorComponent((uiState as Error).message)
+        is Success -> {
+            CitiesListComponent(
+                viewModel,
+                onItemClick
+            )
+        }
+    }*/
 }
 
 @Composable
@@ -64,11 +74,10 @@ fun ErrorComponent(message: String) {
 @Composable
 fun CitiesListComponent(
     viewModel: CityListViewModel,
-    cities: List<CityData>,
     onItemClick: (CityData) -> Unit
 ) {
+    val cities = viewModel.cities.collectAsLazyPagingItems()
     val searchQuery by viewModel.searchText.observeAsState("")
-
     Column(
         Modifier
             .systemBarsPadding()
@@ -122,8 +131,23 @@ fun CitiesListComponent(
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
-            items(cities) { item ->
-                CityItemComponent(item, onItemClick)
+            items(
+                count = cities.itemCount,
+                key = cities.itemKey { city -> city.id },
+                contentType = cities.itemContentType { "City" }) { index: Int ->
+                val city = cities[index]
+                city?.let {
+                    CityItemComponent(city, onItemClick)
+                }
+            }
+            when (cities.loadState.append) {
+                is LoadState.Loading -> item { CircularProgressIndicator() }
+                is LoadState.Error -> item {
+                    val error = cities.loadState.append as LoadState.Error
+                    Text("Error de paginación: ${error.error.message}")
+                }
+
+                else -> Unit
             }
         }
     }

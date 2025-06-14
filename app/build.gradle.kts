@@ -72,6 +72,12 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+    // Room + Pagination
+    implementation(libs.androidx.paging.runtime)
+    implementation("androidx.paging:paging-compose:3.3.6")
+    implementation(libs.androidx.room.paging)
+
+
 
     // Hilt
     implementation(libs.hilt.android)
