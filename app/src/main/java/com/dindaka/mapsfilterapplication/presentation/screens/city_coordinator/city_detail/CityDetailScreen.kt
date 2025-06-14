@@ -16,6 +16,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +60,17 @@ fun MapDetail(modifier: Modifier = Modifier, cityId: Int?){
         modifier
             .fillMaxSize()
     ) {
-        Text(cityId?.toString() ?: "", style = MaterialTheme.typography.headlineMedium)
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            onMapLoaded = {},
+            uiSettings = MapUiSettings(
+                compassEnabled = true,
+                zoomControlsEnabled = true,
+                zoomGesturesEnabled = true,
+                myLocationButtonEnabled = false,
+                rotationGesturesEnabled = true,
+            ),
+        ){
+        }
     }
 }
