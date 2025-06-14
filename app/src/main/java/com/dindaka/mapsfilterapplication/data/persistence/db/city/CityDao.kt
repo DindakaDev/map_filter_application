@@ -21,6 +21,6 @@ interface CityDao {
     @Query("SELECT * FROM $CITY_TABLE_NAME ORDER BY name desc")
     fun getAllPaging(): PagingSource<Int, CityEntity>
 
-    @Query("SELECT * FROM $CITY_TABLE_NAME WHERE LOWER(name) LIKE '%' || LOWER(:query) || '%' AND (:onlyFavorites == 0 OR favorite = 1) ORDER BY name ASC")
+    @Query("SELECT * FROM $CITY_TABLE_NAME WHERE LOWER(name) LIKE '%' || LOWER(:query) || '%' AND (:onlyFavorites == 0 OR favorite = 1) ORDER BY name ASC, country ASC")
     fun getCitiesFiltered(query: String, onlyFavorites: Boolean): PagingSource<Int, CityEntity>
 }
