@@ -81,7 +81,6 @@ fun PortraitComponent(viewModel: SharedSelectionViewModel) {
             CityListScreen(
                 onItemClick = { city ->
                     viewModel.selectItem(city.id)
-                    navController.navigate(Routes.Detail.createRoute(city.id))
                 }
             )
         }
