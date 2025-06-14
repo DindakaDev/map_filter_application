@@ -23,7 +23,7 @@ import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
 import kotlinx.coroutines.launch
 
 @Composable
-fun CityCoordinator(viewModel: SharedSelectionViewModel = hiltViewModel()) {
+fun CityCoordinator(viewModel: SharedCityCoordinatorViewModel = hiltViewModel()) {
     if (isLandscape()) {
         LandscapeComponent(viewModel)
     } else {
@@ -32,7 +32,7 @@ fun CityCoordinator(viewModel: SharedSelectionViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun LandscapeComponent(viewModel: SharedSelectionViewModel) {
+fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
     val selectedId by viewModel.selectedItem.collectAsState()
     val scope = rememberCoroutineScope()
 
@@ -68,7 +68,7 @@ fun LandscapeComponent(viewModel: SharedSelectionViewModel) {
 }
 
 @Composable
-fun PortraitComponent(viewModel: SharedSelectionViewModel) {
+fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
     val navController = rememberNavController()
     val selectedId by viewModel.selectedItem.collectAsState()
     LaunchedEffect(selectedId) {

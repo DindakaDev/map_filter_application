@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class SharedSelectionViewModel @Inject constructor() : ViewModel() {
+class SharedCityCoordinatorViewModel @Inject constructor() : ViewModel() {
     private val _selectedItem = MutableStateFlow<Int?>(null)
     val selectedItem: StateFlow<Int?> = _selectedItem.asStateFlow()
 
