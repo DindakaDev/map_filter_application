@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.moshi.converter)
     implementation(libs.moshi.kotlin)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.adaptive.navigation.android)
     ksp(libs.moshi.codegen)
 
     // Room

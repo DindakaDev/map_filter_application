@@ -1,0 +1,108 @@
+package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.dindaka.mapsfilterapplication.presentation.navigation.Routes
+import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_detail.CityDetailScreen
+import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list.CityListScreen
+import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
+import kotlinx.coroutines.launch
+
+@Composable
+fun CityCoordinator(viewModel: SharedSelectionViewModel = hiltViewModel()) {
+    if (isLandscape()) {
+        LandscapeComponent(viewModel)
+    } else {
+        PortraitComponent(viewModel)
+    }
+}
+
+@Composable
+fun LandscapeComponent(viewModel: SharedSelectionViewModel) {
+    val selectedId by viewModel.selectedItem.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeContentPadding()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                CityListScreen(
+                    onItemClick = { city ->
+                        scope.launch {
+                            viewModel.selectItem(city.id)
+                        }
+                    }
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+            ) {
+                CityDetailScreen(cityId = selectedId)
+            }
+        }
+    }
+}
+
+@Composable
+fun PortraitComponent(viewModel: SharedSelectionViewModel) {
+    val navController = rememberNavController()
+    val selectedId by viewModel.selectedItem.collectAsState()
+    LaunchedEffect(selectedId) {
+        if (selectedId != null) {
+            navController.navigate(Routes.Detail.createRoute(selectedId!!))
+        }
+    }
+    NavHost(navController, startDestination = Routes.List.route) {
+        composable(Routes.List.route) {
+            CityListScreen(
+                onItemClick = { city ->
+                    viewModel.selectItem(city.id)
+                    navController.navigate(Routes.Detail.createRoute(city.id))
+                }
+            )
+        }
+        composable(
+            route = Routes.Detail.route,
+            arguments = listOf(
+                navArgument("itemId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val cityId = backStackEntry.arguments?.getInt("itemId")
+            if (cityId != null) {
+                CityDetailScreen(
+                    cityId = cityId,
+                    onBack = {
+                        viewModel.selectItem(null)
+                        navController.popBackStack()
+                    }
+                )
+            } else {
+                navController.popBackStack()
+            }
+        }
+    }
+}

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MapsFilterApplication</string>
+    <string name="filter">Filter</string>
+    <string name="clear">Clear</string>
 </resources>
