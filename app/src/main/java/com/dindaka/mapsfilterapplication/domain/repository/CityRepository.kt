@@ -7,5 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface CityRepository {
     suspend fun getCities(): Result<Unit>
 
-    fun getCitiesPaging(): Flow<PagingData<CityData>>
+    fun getCitiesPaging(
+        search: String,
+        onlyFavorites: Boolean,
+    ): Flow<PagingData<CityData>>
 }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -24,9 +23,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -35,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
-import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.dindaka.mapsfilterapplication.R
@@ -47,21 +44,17 @@ fun CityListScreen(
     viewModel: CityListViewModel = hiltViewModel(),
     onItemClick: (CityData) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    CitiesListComponent(
-        viewModel,
-        onItemClick
-    )
-    /*when (uiState) {
-        Loading -> LoadingComponent()
-        is Error -> ErrorComponent((uiState as Error).message)
-        is Success -> {
+    val syncState by viewModel.syncState.collectAsState()
+    when (syncState) {
+        StateManager.Loading -> LoadingComponent()
+        is StateManager.Error -> ErrorComponent((syncState as Error).message ?: "")
+        is StateManager.Success -> {
             CitiesListComponent(
                 viewModel,
                 onItemClick
             )
         }
-    }*/
+    }
 }
 
 @Composable
@@ -76,8 +69,9 @@ fun CitiesListComponent(
     viewModel: CityListViewModel,
     onItemClick: (CityData) -> Unit
 ) {
+    val searchQuery by viewModel.searchText.collectAsState("")
+    val onlyFavorite by viewModel.onlyFavorites.collectAsState(false)
     val cities = viewModel.cities.collectAsLazyPagingItems()
-    val searchQuery by viewModel.searchText.observeAsState("")
     Column(
         Modifier
             .systemBarsPadding()

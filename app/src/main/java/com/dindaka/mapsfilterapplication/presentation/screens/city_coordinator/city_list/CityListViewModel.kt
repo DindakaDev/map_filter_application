@@ -8,26 +8,60 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.dindaka.mapsfilterapplication.data.model.CityData
 import com.dindaka.mapsfilterapplication.data.model.StateManager
-import com.dindaka.mapsfilterapplication.domain.usecase.GetCitiesUseCase
+import com.dindaka.mapsfilterapplication.domain.usecase.FetchCitiesUseCase
+import com.dindaka.mapsfilterapplication.domain.usecase.GetCitiesPagingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CityListViewModel @Inject constructor(
-    getCitiesUseCase: GetCitiesUseCase,
+    fetchCitiesUseCase: FetchCitiesUseCase,
+    val getCitiesPagingUseCase: GetCitiesPagingUseCase
 ) : ViewModel() {
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    private val _searchText = MutableStateFlow("")
+    val searchText: StateFlow<String> = _searchText
 
-    private val _searchText = MutableLiveData<String>()
-    val searchText: LiveData<String> = _searchText
+    private val _onlyFavorites = MutableStateFlow(false)
+    val onlyFavorites: StateFlow<Boolean> = _onlyFavorites
 
-    val cities: Flow<PagingData<CityData>> =
-        getCitiesUseCase().cachedIn(viewModelScope)
+    private val _syncState = MutableStateFlow<StateManager<Unit>>(StateManager.Loading)
+    val syncState: StateFlow<StateManager<Unit>> = _syncState
+
+    private val _cities = MutableStateFlow<PagingData<CityData>>(PagingData.empty())
+    val cities: StateFlow<PagingData<CityData>> = _cities
+
+    init {
+        viewModelScope.launch {
+            fetchCitiesUseCase().collect { result ->
+                _syncState.value = result
+            }
+        }
+        observeCities()
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observeCities() {
+        viewModelScope.launch {
+            combine(_searchText, _onlyFavorites) { search, onlyFavorites ->
+                search to onlyFavorites
+            }.flatMapLatest { (search, onlyFavorites) ->
+                getCitiesPagingUseCase(
+                    search = search,
+                    onlyFavorites = onlyFavorites
+                )
+            }.cachedIn(viewModelScope)
+                .collectLatest { _cities.value = it }
+        }
+    }
 
 
     fun onSearchText(text: String) {

@@ -29,10 +29,17 @@ class CityRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCitiesPaging(): Flow<PagingData<CityData>> {
+    override fun getCitiesPaging(
+        search: String,
+        onlyFavorites: Boolean
+    ): Flow<PagingData<CityData>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
-            pagingSourceFactory = { cityDao.getAllPaging() }
+            pagingSourceFactory = {
+                cityDao.getCitiesFiltered(
+                    search, onlyFavorites
+                )
+            }
         ).flow.map { pagingData ->
             pagingData.map { it.toDomain() }
         }

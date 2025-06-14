@@ -1,21 +1,20 @@
 package com.dindaka.mapsfilterapplication.domain.usecase
 
-import androidx.paging.PagingData
-import com.dindaka.mapsfilterapplication.data.model.CityData
+import com.dindaka.mapsfilterapplication.data.model.StateManager
 import com.dindaka.mapsfilterapplication.domain.repository.CityRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
-class GetCitiesUseCase(
+class FetchCitiesUseCase(
     private val repository: CityRepository
 ) {
-    operator fun invoke(): Flow<PagingData<CityData>> = flow {
+    operator fun invoke(): Flow<StateManager<Unit>> = flow {
+        emit(StateManager.Loading)
         val syncResult = repository.getCities()
         if (syncResult.isFailure) {
-            emit(PagingData.empty())
+            emit(StateManager.Error(syncResult.exceptionOrNull()?.message ?: "Unexpected error!"))
             return@flow
         }
-        emitAll(repository.getCitiesPaging())
+        emit(StateManager.Success(Unit))
     }
 }
