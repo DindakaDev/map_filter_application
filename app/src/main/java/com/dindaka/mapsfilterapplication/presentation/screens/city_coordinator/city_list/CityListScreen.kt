@@ -1,6 +1,7 @@
 package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,42 +23,73 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.dindaka.mapsfilterapplication.R
 import com.dindaka.mapsfilterapplication.data.model.CityData
+import com.dindaka.mapsfilterapplication.data.model.StateManager
 
 @Composable
 fun CityListScreen(
+    viewModel: CityListViewModel = hiltViewModel(),
     onItemClick: (CityData) -> Unit
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    val list = listOf(
-        CityData(1, "1", "a", 123.223, 1231.12312323, true),
-        CityData(2, "2", "a", 123.223, 1231.12312323, true),
-        CityData(3, "3", "a", 123.223, 1231.12312323, true),
-        CityData(4, "4", "a", 123.223, 1231.12312323, true),
-        CityData(5, "5", "a", 123.223, 1231.12312323, true)
-    )
+    val uiState by viewModel.uiState.collectAsState()
+    when (uiState) {
+        StateManager.Loading -> LoadingComponent()
+        is StateManager.Error -> ErrorComponent((uiState as StateManager.Error).message)
+        is StateManager.Success -> CitiesListComponent(
+            viewModel,
+            (uiState as StateManager.Success).data,
+            onItemClick
+        )
+    }
+}
+
+@Composable
+fun ErrorComponent(message: String) {
+    Box(Modifier.fillMaxSize()) {
+        Text(message)
+    }
+}
+
+@Composable
+fun CitiesListComponent(
+    viewModel: CityListViewModel,
+    cities: List<CityData>,
+    onItemClick: (CityData) -> Unit
+) {
+    val searchQuery by viewModel.searchText.observeAsState("")
+
     Column(
         Modifier
             .systemBarsPadding()
-            .fillMaxSize()) {
+            .fillMaxSize()
+    ) {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             value = searchQuery,
-            onValueChange = { searchQuery = it },
-            leadingIcon = { Icon(imageVector = Icons.Outlined.Search, contentDescription = "") },
+            onValueChange = { viewModel.onSearchText(it) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = ""
+                )
+            },
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
                     IconButton(
-                        onClick = { searchQuery = "" },
+                        onClick = { viewModel.onSearchText("") },
                         modifier = Modifier.size(24.dp)
                     ) {
                         Icon(
@@ -89,18 +122,37 @@ fun CityListScreen(
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
-            items(list) { item ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { onItemClick(item) }
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(item.name, style = MaterialTheme.typography.titleLarge)
-                    }
-                }
+            items(cities) { item ->
+                CityItemComponent(item, onItemClick)
             }
+        }
+    }
+}
+
+@Composable
+fun LoadingComponent() {
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.align(Alignment.Center)) {
+            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+            Text(
+                stringResource(R.string.load_string_server),
+                modifier = Modifier.padding(horizontal = 20.dp),
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+fun CityItemComponent(item: CityData, onItemClick: (CityData) -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { onItemClick(item) }
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(item.name, style = MaterialTheme.typography.titleLarge)
         }
     }
 }

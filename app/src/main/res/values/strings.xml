@@ -2,4 +2,5 @@
     <string name="app_name">MapsFilterApplication</string>
     <string name="filter">Filter</string>
     <string name="clear">Clear</string>
+    <string name="load_string_server">Loading country list from the server...</string>
 </resources>
