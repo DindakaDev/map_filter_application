@@ -54,6 +54,7 @@ import com.dindaka.mapsfilterapplication.data.model.StateManager
 import com.dindaka.mapsfilterapplication.presentation.components.ErrorComponent
 import com.dindaka.mapsfilterapplication.presentation.components.LoadingComponent
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.SharedCityCoordinatorViewModel
+import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
 
 @Composable
 fun CityListScreen(
@@ -65,7 +66,7 @@ fun CityListScreen(
     val syncState by viewModel.syncState.collectAsState()
     when (syncState) {
         StateManager.Loading -> LoadingComponent(R.string.load_string_server)
-        is StateManager.Error -> ErrorComponent((syncState as Error).message ?: "")
+        is StateManager.Error -> ErrorComponent((syncState as StateManager.Error).message)
         is StateManager.Success -> {
             CitiesListComponent(
                 sharedViewModel,
@@ -250,12 +251,13 @@ fun CityItemComponent(
                     )
                 }
             }
-
-            TextButton(
-                onClick = { onDetailItemClick(item) },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(stringResource(R.string.detail))
+            if(!isLandscape()) {
+                TextButton(
+                    onClick = { onDetailItemClick(item) },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(stringResource(R.string.detail))
+                }
             }
         }
     }

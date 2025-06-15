@@ -19,6 +19,11 @@ class GetCityDetailUseCase @Inject constructor(
             emit(StateManager.Error(response.exceptionOrNull()?.message ?: "Unexpected error!"))
             return@flow
         }
-        emit(StateManager.Success(response.getOrNull()))
+        val resp = response.getOrNull()
+        if(resp != null) {
+            emit(StateManager.Success(resp))
+        } else {
+            emit(StateManager.Error("Unexpected error!"))
+        }
     }
 }

@@ -134,7 +134,7 @@ fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
                 CityDetailScreen(
                     cityId = cityId,
                     onBack = {
-                        viewModel.selectItem(null)
+                        viewModel.selectedShowDetail(null)
                         navController.popBackStack()
                     }
                 )

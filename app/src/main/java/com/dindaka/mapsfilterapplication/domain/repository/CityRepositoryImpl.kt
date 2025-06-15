@@ -68,12 +68,8 @@ class CityRepositoryImpl @Inject constructor(
     override suspend fun getCityDetail(city: String, country: String,cityDetailRequest: CityDetailRequest): Result<CityDetailData> = runCatching {
         coroutineScope {
             val descriptionDeferred = async { geminiApi.getCityDetail(cityDetailRequest.toDto()) }
-            val imageDeferred =
-                async { pexelService.callGetImage("$city+city+$country+center", 1, 1, "landscape") }
 
             val description = descriptionDeferred.await()
-            val imageUrl = imageDeferred.await()
-
             val json = description.candidates.first().content.parts.first().text.replace("```json","").replace("```","")
             val moshi = Moshi.Builder()
                 .add(KotlinJsonAdapterFactory())
@@ -81,6 +77,10 @@ class CityRepositoryImpl @Inject constructor(
             val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
             val adapter = moshi.adapter<Map<String, Any>>(type)
             val parsedJson = adapter.fromJson(json)
+
+            val imageDeferred =
+                async { pexelService.callGetImage("$city+city+${parsedJson?.get("country").toString()}+center", 1, 1, "landscape") }
+            val imageUrl = imageDeferred.await()
 
             CityDetailData(
                 image = imageUrl.photos?.firstOrNull()?.src?.medium,

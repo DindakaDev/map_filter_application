@@ -11,4 +11,13 @@
     <string name="back">Back</string>
     <string name="detail">Detail</string>
     <string name="location_prompt">"Given a location with a state and a country, return detailed information about it in JSON format. The output must be in English and contain only the JSON object, without any explanation or extra text.\n\nThe JSON structure should include:\n- \"country\": Full name of the country\n- \"state_or_region\": The state or region name provided\n- \"capital\": Capital city of the country\n- \"population\": Approximate population of the country\n- \"timezone\": Main timezone(s) of the region\n- \"currency\": Official currency name and symbol\n- \"language\": Main spoken languages\n- \"region_description\": A short description of the region (state)\n- \"climate\": A brief description of the typical climate\n- \"fun_fact\": An interesting or unique fact about the region\n- \"image_url\": \"A working image URL from Unsplash/Pexels/Official Source (no Wikimedia)\"\n\nLocation:\nState: %1$s\nCountry: %2$s\n\nRespond only with valid JSON with no Markdown formatting."</string>
+    <string name="city_image">City Image</string>
+    <string name="capital">Capital</string>
+    <string name="population">Population</string>
+    <string name="timezone">Timezone</string>
+    <string name="currency">Currency</string>
+    <string name="language">Language</string>
+    <string name="region_description">Region Description</string>
+    <string name="climate">Climate</string>
+    <string name="fun_fact">Fun Fact</string>
 </resources>

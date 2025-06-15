@@ -93,6 +93,9 @@ dependencies {
     implementation(libs.maps.utility)
     implementation(libs.maps.composable.widget)
 
+    // image
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
