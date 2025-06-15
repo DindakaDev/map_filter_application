@@ -1,11 +1,14 @@
 package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.map_detail
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -15,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dindaka.mapsfilterapplication.R
 import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
@@ -89,24 +94,38 @@ fun MapDetail(modifier: Modifier = Modifier, viewModel: MapDetailViewModel) {
             )
         }
     }
-
-    GoogleMap(
-        modifier = modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        uiSettings = MapUiSettings(
-            compassEnabled = true,
-            zoomControlsEnabled = true,
-            zoomGesturesEnabled = true,
-            myLocationButtonEnabled = false,
-            rotationGesturesEnabled = true,
-        ),
-    ) {
-        if (cityLatLng != null) {
-            Marker(
-                state = MarkerState(position = cityLatLng),
-                title = "${city?.name}, ${city?.country}",
-                snippet = "Lat: ${cityLatLng.latitude}, Lon: ${cityLatLng.longitude}"
-            )
+    Box {
+        GoogleMap(
+            modifier = modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            uiSettings = MapUiSettings(
+                compassEnabled = true,
+                zoomControlsEnabled = true,
+                zoomGesturesEnabled = true,
+                myLocationButtonEnabled = false,
+                rotationGesturesEnabled = true,
+            ),
+        ) {
+            if (cityLatLng != null) {
+                Marker(
+                    state = MarkerState(position = cityLatLng),
+                    title = "${city?.name}, ${city?.country}",
+                    snippet = "Lat: ${cityLatLng.latitude}, Lon: ${cityLatLng.longitude}"
+                )
+            }
+        }
+        if (isLandscape()) {
+            FloatingActionButton(
+                onClick = {},
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(all = 15.dp)
+            ) {
+                Icon(
+                    Icons.Filled.Info,
+                    contentDescription = stringResource(R.string.detail)
+                )
+            }
         }
     }
 }
