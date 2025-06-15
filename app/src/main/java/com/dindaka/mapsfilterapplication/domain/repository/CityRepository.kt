@@ -2,7 +2,8 @@ package com.dindaka.mapsfilterapplication.domain.repository
 
 import androidx.paging.PagingData
 import com.dindaka.mapsfilterapplication.data.model.CityData
-import com.dindaka.mapsfilterapplication.data.persistence.db.city.CityEntity
+import com.dindaka.mapsfilterapplication.data.model.CityDetailData
+import com.dindaka.mapsfilterapplication.data.remote.dto.CityDetailRequest
 import kotlinx.coroutines.flow.Flow
 
 interface CityRepository {
@@ -19,4 +20,6 @@ interface CityRepository {
     )
 
     suspend fun getCityById(id: Int): CityData?
+
+    suspend fun getCityDetail(city: String, country: String, cityDetailRequest: CityDetailRequest): Result<CityDetailData>
 }

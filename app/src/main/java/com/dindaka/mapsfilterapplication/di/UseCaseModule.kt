@@ -4,6 +4,7 @@ import com.dindaka.mapsfilterapplication.domain.repository.CityRepository
 import com.dindaka.mapsfilterapplication.domain.usecase.FetchCitiesUseCase
 import com.dindaka.mapsfilterapplication.domain.usecase.GetCitiesPagingUseCase
 import com.dindaka.mapsfilterapplication.domain.usecase.GetCityByIdUseCase
+import com.dindaka.mapsfilterapplication.domain.usecase.GetCityDetailUseCase
 import com.dindaka.mapsfilterapplication.domain.usecase.SetFavoriteUseCase
 import dagger.Module
 import dagger.Provides
@@ -24,4 +25,7 @@ object UseCaseModule {
 
     @Provides
     fun provideGetCityByIdUseCase(repository: CityRepository) = GetCityByIdUseCase(repository)
+
+    @Provides
+    fun provideGetCityDetailUseCase(repository: CityRepository) = GetCityDetailUseCase(repository)
 }

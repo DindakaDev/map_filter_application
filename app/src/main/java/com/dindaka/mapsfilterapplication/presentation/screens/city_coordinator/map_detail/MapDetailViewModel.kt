@@ -1,4 +1,4 @@
-package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_detail
+package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.map_detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,15 +11,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CityDetailViewModel @Inject constructor(
-    val getCityByIdUseCase: GetCityByIdUseCase
-): ViewModel() {
+class MapDetailViewModel @Inject constructor(
+    val getCityByIdUseCase: GetCityByIdUseCase,
+) : ViewModel() {
 
     private val _city = MutableStateFlow<CityData?>(null)
-    val city : StateFlow<CityData?> = _city
+    val city: StateFlow<CityData?> = _city
 
-    fun getCityById(id: Int?){
-        if(id == null) return
+    fun getCityById(id: Int?) {
+        if (id == null) return
         viewModelScope.launch {
             _city.value = getCityByIdUseCase(id)
         }

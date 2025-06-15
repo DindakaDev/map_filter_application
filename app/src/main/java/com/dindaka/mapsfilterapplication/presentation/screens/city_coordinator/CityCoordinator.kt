@@ -17,7 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dindaka.mapsfilterapplication.presentation.navigation.Routes
-import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_detail.CityDetailScreen
+import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.map_detail.MapDetailScreen
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list.CityListScreen
 import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
                 modifier = Modifier
                     .weight(2f)
             ) {
-                CityDetailScreen(cityId = selectedId)
+                MapDetailScreen(cityId = selectedId)
             }
         }
     }
@@ -94,7 +94,7 @@ fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
         ) { backStackEntry ->
             val cityId = backStackEntry.arguments?.getInt("itemId")
             if (cityId != null) {
-                CityDetailScreen(
+                MapDetailScreen(
                     cityId = cityId,
                     onBack = {
                         viewModel.selectItem(null)

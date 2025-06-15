@@ -1,7 +1,6 @@
-package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_detail
+package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.map_detail
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -32,8 +31,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CityDetailScreen(
-    viewModel: CityDetailViewModel = hiltViewModel(),
+fun MapDetailScreen(
+    viewModel: MapDetailViewModel = hiltViewModel(),
     cityId: Int?,
     onBack: (() -> Unit)? = null
 ) {
@@ -74,7 +73,7 @@ fun CityDetailScreen(
 }
 
 @Composable
-fun MapDetail(modifier: Modifier = Modifier, viewModel: CityDetailViewModel) {
+fun MapDetail(modifier: Modifier = Modifier, viewModel: MapDetailViewModel) {
     val city by viewModel.city.collectAsState()
     val cityLatLng = city?.let { LatLng(it.lat, it.lon) }
 
