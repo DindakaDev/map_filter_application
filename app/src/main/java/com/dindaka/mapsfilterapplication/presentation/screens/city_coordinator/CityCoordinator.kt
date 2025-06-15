@@ -53,7 +53,8 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
                         scope.launch {
                             viewModel.selectItem(city.id)
                         }
-                    }
+                    },
+                    sharedViewModel = viewModel
                 )
             }
 
@@ -79,6 +80,7 @@ fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
     NavHost(navController, startDestination = Routes.List.route) {
         composable(Routes.List.route) {
             CityListScreen(
+                sharedViewModel = viewModel,
                 onItemClick = { city ->
                     viewModel.selectItem(city.id)
                 }

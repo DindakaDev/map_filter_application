@@ -30,8 +30,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,11 +52,13 @@ import androidx.paging.compose.itemKey
 import com.dindaka.mapsfilterapplication.R
 import com.dindaka.mapsfilterapplication.data.model.CityData
 import com.dindaka.mapsfilterapplication.data.model.StateManager
+import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.SharedCityCoordinatorViewModel
 
 @Composable
 fun CityListScreen(
+    sharedViewModel: SharedCityCoordinatorViewModel,
     viewModel: CityListViewModel = hiltViewModel(),
-    onItemClick: (CityData) -> Unit
+    onItemClick: (CityData) -> Unit,
 ) {
     val syncState by viewModel.syncState.collectAsState()
     when (syncState) {
@@ -64,6 +66,7 @@ fun CityListScreen(
         is StateManager.Error -> ErrorComponent((syncState as Error).message ?: "")
         is StateManager.Success -> {
             CitiesListComponent(
+                sharedViewModel,
                 viewModel,
                 onItemClick
             )
@@ -80,9 +83,11 @@ fun ErrorComponent(message: String) {
 
 @Composable
 fun CitiesListComponent(
+    sharedViewModel: SharedCityCoordinatorViewModel,
     viewModel: CityListViewModel,
     onItemClick: (CityData) -> Unit
 ) {
+    val selectedId by sharedViewModel.selectedItem.collectAsState()
     val searchQuery by viewModel.searchText.collectAsState("")
     val onlyFavorite by viewModel.onlyFavorites.collectAsState(false)
     val cities = viewModel.cities.collectAsLazyPagingItems()
@@ -120,7 +125,9 @@ fun CitiesListComponent(
                 contentType = cities.itemContentType { "City" }) { index: Int ->
                 val city = cities[index]
                 city?.let {
-                    CityItemComponent(item = city, onItemClick = onItemClick, onFavoriteClick = {
+                    CityItemComponent(
+                        selectedId = selectedId,
+                        item = city, onItemClick = onItemClick, onFavoriteClick = {
                         viewModel.onSwitchFavoriteState(city)
                     })
                 }
@@ -196,59 +203,77 @@ fun LoadingComponent() {
 fun CityItemComponent(
     item: CityData,
     onItemClick: (CityData) -> Unit,
-    onFavoriteClick: (CityData) -> Unit
+    onFavoriteClick: (CityData) -> Unit,
+    selectedId: Int?
 ) {
     val favoriteColor by animateColorAsState(
         targetValue = if (item.favorite) Color(0xFFD32F2F) else Color(0xFF9E9E9E),
         label = "Favorite Color Animation"
     )
 
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selectedId == item.id)
+            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.30f)
+        else
+            MaterialTheme.colorScheme.surfaceVariant,
+        label = "Card Background Color"
+    )
+
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .fillMaxWidth()
             .clickable { onItemClick(item) }
     ) {
-        Row(
+        Column(
             modifier = Modifier
+                .background(backgroundColor)
                 .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "${item.name}, ${item.country}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${item.lat}, ${item.lon}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "${item.name}, ${item.country}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${item.lat}, ${item.lon}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                IconButton(
+                    onClick = { onFavoriteClick(item) }
+                ) {
+                    Icon(
+                        imageVector = if (item.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                        contentDescription = if (item.favorite)
+                            stringResource(R.string.remove_from_favorites)
+                        else
+                            stringResource(R.string.add_to_favorites),
+                        tint = favoriteColor
+                    )
+                }
             }
 
-            IconButton(
-                onClick = { onFavoriteClick(item) }
+            TextButton(
+                onClick = {},
+                modifier = Modifier.align(Alignment.End)
             ) {
-                Icon(
-                    imageVector = if (item.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = if (item.favorite)
-                        stringResource(R.string.remove_from_favorites)
-                    else
-                        stringResource(R.string.add_to_favorites),
-                    tint = favoriteColor
-                )
+                Text(stringResource(R.string.detail))
             }
         }
     }
 }
+
 
 @Composable
 fun FavoriteFilterButton(
