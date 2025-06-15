@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dindaka.mapsfilterapplication.presentation.navigation.Routes
+import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_detail.CityDetailScreen
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.map_detail.MapDetailScreen
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list.CityListScreen
 import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
@@ -54,7 +55,12 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
                             viewModel.selectItem(city.id)
                         }
                     },
-                    sharedViewModel = viewModel
+                    onDetailItemClick = { city ->
+                        scope.launch {
+                            viewModel.selectedShowDetail(city.id)
+                        }
+                    },
+                    sharedViewModel = viewModel,
                 )
             }
 
@@ -72,19 +78,50 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
 fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
     val navController = rememberNavController()
     val selectedId by viewModel.selectedItem.collectAsState()
+    val detailSelectedItem by viewModel.detailSelectedItem.collectAsState()
+
     LaunchedEffect(selectedId) {
         if (selectedId != null) {
-            navController.navigate(Routes.Detail.createRoute(selectedId!!))
+            navController.navigate(Routes.Map.createRoute(selectedId!!))
         }
     }
+
+    LaunchedEffect(detailSelectedItem) {
+        if (detailSelectedItem != null) {
+            navController.navigate(Routes.Detail.createRoute(detailSelectedItem!!))
+        }
+    }
+
     NavHost(navController, startDestination = Routes.List.route) {
         composable(Routes.List.route) {
             CityListScreen(
                 sharedViewModel = viewModel,
                 onItemClick = { city ->
                     viewModel.selectItem(city.id)
+                },
+                onDetailItemClick = { city ->
+                    viewModel.selectedShowDetail(city.id)
                 }
             )
+        }
+        composable(
+            route = Routes.Map.route,
+            arguments = listOf(
+                navArgument("itemId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val cityId = backStackEntry.arguments?.getInt("itemId")
+            if (cityId != null) {
+                MapDetailScreen(
+                    cityId = cityId,
+                    onBack = {
+                        viewModel.selectItem(null)
+                        navController.popBackStack()
+                    }
+                )
+            } else {
+                navController.popBackStack()
+            }
         }
         composable(
             route = Routes.Detail.route,
@@ -94,7 +131,7 @@ fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
         ) { backStackEntry ->
             val cityId = backStackEntry.arguments?.getInt("itemId")
             if (cityId != null) {
-                MapDetailScreen(
+                CityDetailScreen(
                     cityId = cityId,
                     onBack = {
                         viewModel.selectItem(null)

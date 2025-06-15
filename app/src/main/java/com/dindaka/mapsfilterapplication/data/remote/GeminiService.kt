@@ -7,7 +7,7 @@ import retrofit2.http.POST
 
 interface GeminiService {
     @POST("v1beta/models/gemini-2.0-flash:generateContent")
-    fun getCityDetail(
+    suspend fun getCityDetail(
         @Body body: CityDetailMainRequest
     ): CityDetailDto
 }

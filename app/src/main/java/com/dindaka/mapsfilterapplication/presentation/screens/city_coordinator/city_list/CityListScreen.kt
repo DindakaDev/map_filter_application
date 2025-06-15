@@ -60,6 +60,7 @@ fun CityListScreen(
     sharedViewModel: SharedCityCoordinatorViewModel,
     viewModel: CityListViewModel = hiltViewModel(),
     onItemClick: (CityData) -> Unit,
+    onDetailItemClick: (CityData) -> Unit,
 ) {
     val syncState by viewModel.syncState.collectAsState()
     when (syncState) {
@@ -69,7 +70,8 @@ fun CityListScreen(
             CitiesListComponent(
                 sharedViewModel,
                 viewModel,
-                onItemClick
+                onItemClick,
+                onDetailItemClick
             )
         }
     }
@@ -79,7 +81,8 @@ fun CityListScreen(
 fun CitiesListComponent(
     sharedViewModel: SharedCityCoordinatorViewModel,
     viewModel: CityListViewModel,
-    onItemClick: (CityData) -> Unit
+    onItemClick: (CityData) -> Unit,
+    onDetailItemClick: (CityData) -> Unit
 ) {
     val selectedId by sharedViewModel.selectedItem.collectAsState()
     val searchQuery by viewModel.searchText.collectAsState("")
@@ -121,9 +124,12 @@ fun CitiesListComponent(
                 city?.let {
                     CityItemComponent(
                         selectedId = selectedId,
-                        item = city, onItemClick = onItemClick, onFavoriteClick = {
-                        viewModel.onSwitchFavoriteState(city)
-                    })
+                        item = city,
+                        onItemClick = onItemClick,
+                        onDetailItemClick = onDetailItemClick,
+                        onFavoriteClick = {
+                            viewModel.onSwitchFavoriteState(city)
+                        })
                 }
             }
             when (cities.loadState.append) {
@@ -184,7 +190,8 @@ fun CityItemComponent(
     item: CityData,
     onItemClick: (CityData) -> Unit,
     onFavoriteClick: (CityData) -> Unit,
-    selectedId: Int?
+    selectedId: Int?,
+    onDetailItemClick: (CityData) -> Unit
 ) {
     val favoriteColor by animateColorAsState(
         targetValue = if (item.favorite) Color(0xFFD32F2F) else Color(0xFF9E9E9E),
@@ -245,7 +252,7 @@ fun CityItemComponent(
             }
 
             TextButton(
-                onClick = {},
+                onClick = { onDetailItemClick(item) },
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(stringResource(R.string.detail))

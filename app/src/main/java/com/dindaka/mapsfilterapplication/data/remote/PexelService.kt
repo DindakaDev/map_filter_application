@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface PexelService {
     @GET("v1/search")
-    fun callGetImage(
+    suspend fun callGetImage(
         @Query("query") query: String,
         @Query("per_page") perPage: Int,
         @Query("page") page: Int,

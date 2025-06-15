@@ -74,7 +74,7 @@ class CityRepositoryImpl @Inject constructor(
             val description = descriptionDeferred.await()
             val imageUrl = imageDeferred.await()
 
-            val json = description.candidates.first().content.parts.first().text
+            val json = description.candidates.first().content.parts.first().text.replace("```json","").replace("```","")
             val moshi = Moshi.Builder()
                 .add(KotlinJsonAdapterFactory())
                 .build()
@@ -83,7 +83,7 @@ class CityRepositoryImpl @Inject constructor(
             val parsedJson = adapter.fromJson(json)
 
             CityDetailData(
-                image = imageUrl.photos?.firstOrNull()?.url,
+                image = imageUrl.photos?.firstOrNull()?.src?.medium,
                 country = parsedJson?.get("country").toString(),
                 stateOrRegion = parsedJson?.get("state_or_region").toString(),
                 capital = parsedJson?.get("capital").toString(),

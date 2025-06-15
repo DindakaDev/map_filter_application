@@ -27,10 +27,10 @@ fun CityDetailScreen(
     BackHandler {
         onBack?.let { it() }
     }
-    val syncState by viewModel.cityDetail.collectAsState()
-    when (syncState) {
+    val cityDetail by viewModel.cityDetail.collectAsState()
+    when (cityDetail) {
         StateManager.Loading -> LoadingComponent(R.string.load_string_city_detail)
-        is StateManager.Error -> ErrorComponent((syncState as Error).message ?: "")
+        is StateManager.Error -> ErrorComponent((cityDetail as Error).message ?: "")
         is StateManager.Success -> {
             Column{}
         }

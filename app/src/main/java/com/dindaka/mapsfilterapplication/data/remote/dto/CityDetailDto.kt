@@ -7,7 +7,7 @@ data class CityDetailDto (
     val candidates: List<Candidate>,
     val usageMetadata: UsageMetadata,
     val modelVersion: String,
-    val responseID: String
+    val responseId: String
 )
 
 @JsonClass(generateAdapter = true)

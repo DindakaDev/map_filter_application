@@ -2,6 +2,8 @@ package com.dindaka.mapsfilterapplication.di
 
 import com.dindaka.mapsfilterapplication.data.persistence.db.city.CityDao
 import com.dindaka.mapsfilterapplication.data.remote.ApiService
+import com.dindaka.mapsfilterapplication.data.remote.GeminiService
+import com.dindaka.mapsfilterapplication.data.remote.PexelService
 import com.dindaka.mapsfilterapplication.domain.repository.CityRepository
 import com.dindaka.mapsfilterapplication.domain.repository.CityRepositoryImpl
 import dagger.Module
@@ -16,6 +18,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideCityRepository(apiService: ApiService, cityDao: CityDao): CityRepository =
-        CityRepositoryImpl(apiService, cityDao)
+    fun provideCityRepository(
+        apiService: ApiService,
+        geminiService: GeminiService,
+        pexelService: PexelService,
+        cityDao: CityDao
+    ): CityRepository =
+        CityRepositoryImpl(apiService, geminiService, pexelService, cityDao)
 }
