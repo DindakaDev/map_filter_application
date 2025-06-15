@@ -11,4 +11,9 @@ interface CityRepository {
         search: String,
         onlyFavorites: Boolean,
     ): Flow<PagingData<CityData>>
+
+    suspend fun updateFavorite(
+        id: Int,
+        favorite: Boolean
+    )
 }

@@ -44,4 +44,8 @@ class CityRepositoryImpl @Inject constructor(
             pagingData.map { it.toDomain() }
         }
     }
+
+    override suspend fun updateFavorite(id: Int, favorite: Boolean) {
+        cityDao.updateFavorite(id, favorite)
+    }
 }

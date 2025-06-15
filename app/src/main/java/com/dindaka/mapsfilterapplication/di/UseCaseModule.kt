@@ -3,6 +3,7 @@ package com.dindaka.mapsfilterapplication.di
 import com.dindaka.mapsfilterapplication.domain.repository.CityRepository
 import com.dindaka.mapsfilterapplication.domain.usecase.FetchCitiesUseCase
 import com.dindaka.mapsfilterapplication.domain.usecase.GetCitiesPagingUseCase
+import com.dindaka.mapsfilterapplication.domain.usecase.SetFavoriteUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,4 +17,7 @@ object UseCaseModule {
 
     @Provides
     fun provideGetCitiesPagingUseCase(repository: CityRepository) = GetCitiesPagingUseCase(repository)
+
+    @Provides
+    fun provideSetFavoriteUseCase(repository: CityRepository) = SetFavoriteUseCase(repository)
 }

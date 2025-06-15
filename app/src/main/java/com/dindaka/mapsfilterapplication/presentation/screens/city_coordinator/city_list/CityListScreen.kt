@@ -1,17 +1,24 @@
 package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -26,6 +33,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -77,51 +86,75 @@ fun CitiesListComponent(
             .systemBarsPadding()
             .fillMaxSize()
     ) {
-        OutlinedTextField(
-            modifier = Modifier
+        Row(
+            Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            value = searchQuery,
-            onValueChange = { viewModel.onSearchText(it) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = ""
-                )
-            },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(
-                        onClick = { viewModel.onSearchText("") },
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(R.string.clear),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                .padding(8.dp)
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                value = searchQuery,
+                onValueChange = { viewModel.onSearchText(it) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = ""
+                    )
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(
+                            onClick = { viewModel.onSearchText("") },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(R.string.clear),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
-                }
-            },
-            placeholder = { Text(stringResource(R.string.filter)) },
-            maxLines = 1,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email
-            ),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                },
+                placeholder = { Text(stringResource(R.string.filter)) },
+                maxLines = 1,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             )
-        )
+            Box(
+                Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(Color.Red)
+                    .clickable {
+                        viewModel.toggleFavorites()
+                    }
+            ) {
+                Icon(
+                    if (onlyFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = if (onlyFavorite) stringResource(R.string.showing_only_favorites) else stringResource(
+                        R.string.showing_all_items
+                    ),
+                    modifier = Modifier.align(Alignment.Center),
+                    tint = Color.White
+                )
+            }
+        }
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
@@ -131,7 +164,7 @@ fun CitiesListComponent(
                 contentType = cities.itemContentType { "City" }) { index: Int ->
                 val city = cities[index]
                 city?.let {
-                    CityItemComponent(city, onItemClick)
+                    CityItemComponent(viewModel, city, onItemClick)
                 }
             }
             when (cities.loadState.append) {
@@ -162,15 +195,34 @@ fun LoadingComponent() {
 }
 
 @Composable
-fun CityItemComponent(item: CityData, onItemClick: (CityData) -> Unit) {
+fun CityItemComponent(
+    viewModel: CityListViewModel,
+    item: CityData,
+    onItemClick: (CityData) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { onItemClick(item) }
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(item.name, style = MaterialTheme.typography.titleLarge)
+        Row(modifier = Modifier.padding(16.dp)) {
+            Column(Modifier.weight(1f)) {
+                Text("${item.name}, ${item.country}", style = MaterialTheme.typography.titleLarge)
+                Text("${item.lat}, ${item.lon}", style = MaterialTheme.typography.bodyMedium)
+            }
+            IconButton(
+                onClick = {
+                    viewModel.onSwitchFavoriteState(item)
+                }
+            ) {
+                Icon(
+                    imageVector = if (item.favorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = if (item.favorite) stringResource(R.string.remove_from_favorites) else stringResource(
+                        R.string.add_to_favorites
+                    )
+                )
+            }
         }
     }
 }

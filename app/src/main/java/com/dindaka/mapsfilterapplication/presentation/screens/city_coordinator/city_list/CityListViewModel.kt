@@ -1,7 +1,5 @@
 package com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -10,6 +8,7 @@ import com.dindaka.mapsfilterapplication.data.model.CityData
 import com.dindaka.mapsfilterapplication.data.model.StateManager
 import com.dindaka.mapsfilterapplication.domain.usecase.FetchCitiesUseCase
 import com.dindaka.mapsfilterapplication.domain.usecase.GetCitiesPagingUseCase
+import com.dindaka.mapsfilterapplication.domain.usecase.SetFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CityListViewModel @Inject constructor(
     fetchCitiesUseCase: FetchCitiesUseCase,
-    val getCitiesPagingUseCase: GetCitiesPagingUseCase
+    val getCitiesPagingUseCase: GetCitiesPagingUseCase,
+    val setFavoriteUseCase: SetFavoriteUseCase
 ) : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -63,8 +63,17 @@ class CityListViewModel @Inject constructor(
         }
     }
 
+    fun toggleFavorites() {
+        _onlyFavorites.value = !_onlyFavorites.value
+    }
 
     fun onSearchText(text: String) {
         _searchText.value = text
+    }
+
+    fun onSwitchFavoriteState(item: CityData) {
+        viewModelScope.launch {
+            setFavoriteUseCase(item)
+        }
     }
 }
