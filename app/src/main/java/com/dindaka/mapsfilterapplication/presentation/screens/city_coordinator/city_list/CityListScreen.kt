@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
@@ -52,6 +51,8 @@ import androidx.paging.compose.itemKey
 import com.dindaka.mapsfilterapplication.R
 import com.dindaka.mapsfilterapplication.data.model.CityData
 import com.dindaka.mapsfilterapplication.data.model.StateManager
+import com.dindaka.mapsfilterapplication.presentation.components.ErrorComponent
+import com.dindaka.mapsfilterapplication.presentation.components.LoadingComponent
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.SharedCityCoordinatorViewModel
 
 @Composable
@@ -62,7 +63,7 @@ fun CityListScreen(
 ) {
     val syncState by viewModel.syncState.collectAsState()
     when (syncState) {
-        StateManager.Loading -> LoadingComponent()
+        StateManager.Loading -> LoadingComponent(R.string.load_string_server)
         is StateManager.Error -> ErrorComponent((syncState as Error).message ?: "")
         is StateManager.Success -> {
             CitiesListComponent(
@@ -71,13 +72,6 @@ fun CityListScreen(
                 onItemClick
             )
         }
-    }
-}
-
-@Composable
-fun ErrorComponent(message: String) {
-    Box(Modifier.fillMaxSize()) {
-        Text(message)
     }
 }
 
@@ -183,20 +177,6 @@ fun InputFilterComponent(modifier: Modifier, searchQuery: String, onSearch: (Str
         ),
         shape = RoundedCornerShape(16.dp)
     )
-}
-
-@Composable
-fun LoadingComponent() {
-    Box(Modifier.fillMaxSize()) {
-        Column(Modifier.align(Alignment.Center)) {
-            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-            Text(
-                stringResource(R.string.load_string_server),
-                modifier = Modifier.padding(horizontal = 20.dp),
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
 }
 
 @Composable
