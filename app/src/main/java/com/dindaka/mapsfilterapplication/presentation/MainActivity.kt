@@ -16,7 +16,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MapsFilterApplicationTheme {
-                CityCoordinator()
+                Scaffold(
+                    content = { innerPadding ->
+                        CityCoordinator()
+                    }
+                )
             }
         }
     }

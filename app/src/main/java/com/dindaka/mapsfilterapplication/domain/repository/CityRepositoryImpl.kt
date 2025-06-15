@@ -48,4 +48,8 @@ class CityRepositoryImpl @Inject constructor(
     override suspend fun updateFavorite(id: Int, favorite: Boolean) {
         cityDao.updateFavorite(id, favorite)
     }
+
+    override suspend fun getCityById(id: Int): CityData? {
+        return cityDao.getCityById(id)?.toDomain()
+    }
 }
