@@ -43,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
@@ -59,7 +58,7 @@ import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
 @Composable
 fun CityListScreen(
     sharedViewModel: SharedCityCoordinatorViewModel,
-    viewModel: CityListViewModel = hiltViewModel(),
+    viewModel: CityListViewModel,
     onItemClick: (CityData) -> Unit,
     onDetailItemClick: ((CityData) -> Unit)? = null,
 ) {

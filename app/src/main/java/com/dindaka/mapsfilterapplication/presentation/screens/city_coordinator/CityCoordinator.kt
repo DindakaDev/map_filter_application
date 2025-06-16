@@ -20,20 +20,21 @@ import com.dindaka.mapsfilterapplication.presentation.navigation.Routes
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_detail.CityDetailScreen
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.map_detail.MapDetailScreen
 import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list.CityListScreen
+import com.dindaka.mapsfilterapplication.presentation.screens.city_coordinator.city_list.CityListViewModel
 import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
 import kotlinx.coroutines.launch
 
 @Composable
-fun CityCoordinator(viewModel: SharedCityCoordinatorViewModel = hiltViewModel()) {
+fun CityCoordinator(viewModel: SharedCityCoordinatorViewModel = hiltViewModel(), cityListViewModel: CityListViewModel = hiltViewModel()) {
     if (isLandscape()) {
-        LandscapeComponent(viewModel)
+        LandscapeComponent(viewModel, cityListViewModel)
     } else {
-        PortraitComponent(viewModel)
+        PortraitComponent(viewModel, cityListViewModel)
     }
 }
 
 @Composable
-fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
+fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel, cityListViewModel: CityListViewModel) {
     val selectedId by viewModel.selectedItem.collectAsState()
     val detailSelectedId by viewModel.detailSelectedItem.collectAsState()
     val scope = rememberCoroutineScope()
@@ -51,12 +52,13 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
                     .weight(1f)
             ) {
                 CityListScreen(
+                    viewModel = cityListViewModel,
+                    sharedViewModel = viewModel,
                     onItemClick = { city ->
                         scope.launch {
                             viewModel.selectItem(city.id)
                         }
                     },
-                    sharedViewModel = viewModel,
                 )
             }
 
@@ -81,7 +83,7 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
 }
 
 @Composable
-fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel, fullScreen: Boolean = true) {
+fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel, cityListViewModel: CityListViewModel) {
     val navController = rememberNavController()
     val selectedId by viewModel.selectedItem.collectAsState()
     val detailSelectedItem by viewModel.detailSelectedItem.collectAsState()
@@ -102,6 +104,7 @@ fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel, fullScreen: Boo
         composable(Routes.List.route) {
             CityListScreen(
                 sharedViewModel = viewModel,
+                viewModel = cityListViewModel,
                 onItemClick = { city ->
                     viewModel.selectItem(city.id)
                 },
