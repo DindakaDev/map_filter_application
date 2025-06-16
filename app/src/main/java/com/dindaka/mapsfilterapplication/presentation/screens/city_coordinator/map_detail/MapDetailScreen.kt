@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dindaka.mapsfilterapplication.R
+import com.dindaka.mapsfilterapplication.data.model.CityData
 import com.dindaka.mapsfilterapplication.presentation.screens.utils.isLandscape
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -39,8 +40,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 fun MapDetailScreen(
     viewModel: MapDetailViewModel = hiltViewModel(),
     cityId: Int?,
-    onBack: (() -> Unit)? = null
+    onDetailItemClick: (()-> Unit)? = null,
+    onBack: (() -> Unit)? = null,
 ) {
+    val city by viewModel.city.collectAsState()
     LaunchedEffect(key1 = cityId) {
         viewModel.getCityById(cityId)
     }
@@ -49,9 +52,8 @@ fun MapDetailScreen(
         onBack?.let { it() }
     }
     if (isLandscape()) {
-        MapDetail(viewModel = viewModel)
+        MapDetail(viewModel = viewModel, onDetailItemClick = onDetailItemClick)
     } else {
-        val city by viewModel.city.collectAsState()
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -71,14 +73,18 @@ fun MapDetailScreen(
                 )
             },
             content = { padding ->
-                MapDetail(Modifier.padding(padding), viewModel = viewModel)
+                MapDetail(Modifier.padding(padding), viewModel = viewModel, onDetailItemClick)
             }
         )
     }
 }
 
 @Composable
-fun MapDetail(modifier: Modifier = Modifier, viewModel: MapDetailViewModel) {
+fun MapDetail(
+    modifier: Modifier = Modifier,
+    viewModel: MapDetailViewModel,
+    onDetailItemClick: (() -> Unit)?
+) {
     val city by viewModel.city.collectAsState()
     val cityLatLng = city?.let { LatLng(it.lat, it.lon) }
 
@@ -114,9 +120,11 @@ fun MapDetail(modifier: Modifier = Modifier, viewModel: MapDetailViewModel) {
                 )
             }
         }
-        if (isLandscape()) {
+        if (isLandscape() && city != null) {
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                    onDetailItemClick?.invoke()
+                },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(all = 15.dp)

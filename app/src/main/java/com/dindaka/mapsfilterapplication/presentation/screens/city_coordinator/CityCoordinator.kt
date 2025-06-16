@@ -35,6 +35,7 @@ fun CityCoordinator(viewModel: SharedCityCoordinatorViewModel = hiltViewModel())
 @Composable
 fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
     val selectedId by viewModel.selectedItem.collectAsState()
+    val detailSelectedId by viewModel.detailSelectedItem.collectAsState()
     val scope = rememberCoroutineScope()
 
     Box(
@@ -55,11 +56,6 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
                             viewModel.selectItem(city.id)
                         }
                     },
-                    onDetailItemClick = { city ->
-                        scope.launch {
-                            viewModel.selectedShowDetail(city.id)
-                        }
-                    },
                     sharedViewModel = viewModel,
                 )
             }
@@ -68,14 +64,24 @@ fun LandscapeComponent(viewModel: SharedCityCoordinatorViewModel) {
                 modifier = Modifier
                     .weight(2f)
             ) {
-                MapDetailScreen(cityId = selectedId)
+                if(detailSelectedId == null) {
+                    MapDetailScreen(cityId = selectedId, onDetailItemClick = {
+                        scope.launch {
+                             viewModel.selectedShowDetail(selectedId)
+                        }
+                    })
+                } else {
+                    CityDetailScreen(cityId = selectedId, onBack = {
+                        viewModel.selectedShowDetail(null)
+                    })
+                }
             }
         }
     }
 }
 
 @Composable
-fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
+fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel, fullScreen: Boolean = true) {
     val navController = rememberNavController()
     val selectedId by viewModel.selectedItem.collectAsState()
     val detailSelectedItem by viewModel.detailSelectedItem.collectAsState()
@@ -116,6 +122,7 @@ fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
                     cityId = cityId,
                     onBack = {
                         viewModel.selectItem(null)
+                        viewModel.selectedShowDetail(null)
                         navController.popBackStack()
                     }
                 )
@@ -134,6 +141,7 @@ fun PortraitComponent(viewModel: SharedCityCoordinatorViewModel) {
                 CityDetailScreen(
                     cityId = cityId,
                     onBack = {
+                        viewModel.selectItem(null)
                         viewModel.selectedShowDetail(null)
                         navController.popBackStack()
                     }

@@ -61,7 +61,7 @@ fun CityListScreen(
     sharedViewModel: SharedCityCoordinatorViewModel,
     viewModel: CityListViewModel = hiltViewModel(),
     onItemClick: (CityData) -> Unit,
-    onDetailItemClick: (CityData) -> Unit,
+    onDetailItemClick: ((CityData) -> Unit)? = null,
 ) {
     val syncState by viewModel.syncState.collectAsState()
     when (syncState) {
@@ -83,7 +83,7 @@ fun CitiesListComponent(
     sharedViewModel: SharedCityCoordinatorViewModel,
     viewModel: CityListViewModel,
     onItemClick: (CityData) -> Unit,
-    onDetailItemClick: (CityData) -> Unit
+    onDetailItemClick: ((CityData) -> Unit)? = null
 ) {
     val selectedId by sharedViewModel.selectedItem.collectAsState()
     val searchQuery by viewModel.searchText.collectAsState("")
@@ -192,7 +192,7 @@ fun CityItemComponent(
     onItemClick: (CityData) -> Unit,
     onFavoriteClick: (CityData) -> Unit,
     selectedId: Int?,
-    onDetailItemClick: (CityData) -> Unit
+    onDetailItemClick: ((CityData) -> Unit)? = null,
 ) {
     val favoriteColor by animateColorAsState(
         targetValue = if (item.favorite) Color(0xFFD32F2F) else Color(0xFF9E9E9E),
@@ -253,7 +253,7 @@ fun CityItemComponent(
             }
             if(!isLandscape()) {
                 TextButton(
-                    onClick = { onDetailItemClick(item) },
+                    onClick = { onDetailItemClick?.invoke(item) },
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text(stringResource(R.string.detail))

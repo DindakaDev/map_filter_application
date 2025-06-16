@@ -35,6 +35,7 @@ class CityDetailViewModel @Inject constructor(
     }
 
     private fun getCityDetail(city: CityData?, promp: String) {
+        _cityDetail.value = StateManager.Loading
         city?.let {
             viewModelScope.launch {
                 getCityDetailUseCase(

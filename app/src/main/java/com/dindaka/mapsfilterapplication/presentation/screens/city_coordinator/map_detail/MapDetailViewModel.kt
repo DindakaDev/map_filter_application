@@ -21,6 +21,7 @@ class MapDetailViewModel @Inject constructor(
     fun getCityById(id: Int?) {
         if (id == null) return
         viewModelScope.launch {
+            _city.value = null
             _city.value = getCityByIdUseCase(id)
         }
     }
