@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.adaptive.navigation.android)
+    testImplementation(libs.junit.jupiter)
     ksp(libs.moshi.codegen)
 
     // Room
@@ -75,7 +76,7 @@ dependencies {
     ksp(libs.room.compiler)
     // Room + Pagination
     implementation(libs.androidx.paging.runtime)
-    implementation("androidx.paging:paging-compose:3.3.6")
+    implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.room.paging)
 
 
@@ -94,9 +95,14 @@ dependencies {
     implementation(libs.maps.composable.widget)
 
     // image
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
+    // Test
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation("androidx.room:room-testing:2.7.1")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
