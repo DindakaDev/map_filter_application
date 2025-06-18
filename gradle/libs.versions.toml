@@ -27,7 +27,7 @@ mapsComposeVersion = "4.4.1"
 playServicesLocation = "21.3.0"
 seacretVersion = "2.0.1"
 adaptiveNavigationAndroid = "1.1.0"
-junitJupiter = "5.8.1"
+coreKtxVersion = "1.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -83,7 +83,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.adaptive.navigation.android)
-    testImplementation(libs.junit.jupiter)
+    implementation(libs.core.ktx)
     ksp(libs.moshi.codegen)
 
     // Room
@@ -101,7 +101,6 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation("androidx.room:room-testing:2.7.1")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

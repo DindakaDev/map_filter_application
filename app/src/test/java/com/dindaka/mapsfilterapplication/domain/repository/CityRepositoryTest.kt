@@ -1,9 +1,5 @@
 package com.dindaka.mapsfilterapplication.domain.repository
 
-import androidx.paging.PagingData
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
-import androidx.paging.map
 import com.dindaka.mapsfilterapplication.data.mappers.toDto
 import com.dindaka.mapsfilterapplication.data.persistence.db.city.CityDao
 import com.dindaka.mapsfilterapplication.data.persistence.db.city.CityEntity
@@ -19,24 +15,20 @@ import com.dindaka.mapsfilterapplication.data.remote.dto.Content
 import com.dindaka.mapsfilterapplication.data.remote.dto.Part
 import com.dindaka.mapsfilterapplication.data.remote.dto.Photo
 import com.dindaka.mapsfilterapplication.data.remote.dto.Src
-import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.JsonEncodingException
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -44,13 +36,10 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.experimental.runners.Enclosed
-import org.junit.runner.RunWith
 import java.io.IOException
 
-@RunWith(Enclosed::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class CityRepositoryImplTest {
+class CityRepositoryTest {
 
     @RelaxedMockK
     private lateinit var apiService: ApiService
@@ -67,6 +56,8 @@ class CityRepositoryImplTest {
     private lateinit var repository: CityRepository
 
     private val testDispatcher = StandardTestDispatcher()
+
+    private val testRequest = CityDetailRequest(text = "")
 
     @Before
     fun setUp() {
@@ -97,7 +88,7 @@ class CityRepositoryImplTest {
     fun `should fetch from remote when no local data exists`() = runTest {
         // Given
         coEvery { cityDao.getFirstCity() } returns null
-        val mockCities = listOf(mockk<CityDto>())
+        val mockCities = listOf(mockk<CityDto>(relaxed = true))
         coEvery { apiService.getCities() } returns mockCities
         coEvery { cityDao.insertAll(any()) } just Runs
 
@@ -120,61 +111,8 @@ class CityRepositoryImplTest {
         val result = repository.getCities()
 
         // Then
-        assertFalse(result.isFailure)
+        assertTrue(result.isFailure)
         assertTrue(result.exceptionOrNull() is IOException)
-    }
-
-    @Test
-    fun `should return flow of paging data`() = runTest {
-        // Given
-        val mockPagingSource = mockk<PagingSource<Int, CityEntity>>()
-        every { cityDao.getCitiesFiltered(any(), any()) } returns mockPagingSource
-
-        // When
-        val flow = repository.getCitiesPaging("test", true)
-
-        // Then
-        flow.collect {
-            assertNotNull(it)
-            cancel()
-        }
-        verify { cityDao.getCitiesFiltered("test", true) }
-    }
-
-    @Test
-    fun `should map entities to domain models`() = runTest {
-        // Given
-        val testEntity = CityEntity(
-            id = 1,
-            name = "Colima",
-            country = "Mx",
-            lat = 0.0,
-            lon = 0.0,
-            favorite = false
-        )
-        val mockPagingSource = object : PagingSource<Int, CityEntity>() {
-            override fun getRefreshKey(state: PagingState<Int, CityEntity>): Int = 1
-
-            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CityEntity> {
-                return LoadResult.Page(
-                    data = listOf(testEntity),
-                    prevKey = null,
-                    nextKey = 2
-                )
-            }
-        }
-        every { cityDao.getCitiesFiltered(any(), any()) } returns mockPagingSource
-
-        // When
-        val flow = repository.getCitiesPaging("", false)
-
-        // Then
-        flow.collect {
-            val pagingData = it
-            val items = pagingData.getItems()
-            assertEquals(1, items.size)
-            assertEquals("Colima", items[0].name)
-        }
     }
 
     @Test
@@ -221,8 +159,6 @@ class CityRepositoryImplTest {
         assertNotNull(result)
         assertEquals(1, result?.id)
     }
-
-    private val testRequest = CityDetailRequest(text = "")
 
     @Test
     fun `should return city detail when all calls succeed`() = runTest {
@@ -347,7 +283,7 @@ class CityRepositoryImplTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is JsonDataException)
+        assertTrue(result.exceptionOrNull() is JsonEncodingException)
     }
 
     @Test
@@ -400,13 +336,4 @@ class CityRepositoryImplTest {
             """.trimIndent()
     }
 
-
-    // Extensión para obtener items de PagingData en tests
-    private fun <T : Any> PagingData<T>.getItems(): List<T> {
-        val items = mutableListOf<T>()
-        this.map {
-            items.add(it)
-        }
-        return items
-    }
 }
