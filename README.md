@@ -4,6 +4,10 @@
 
 This document outlines the approach taken to solve the search problem efficiently within the application. Several strategies were evaluated to determine the best balance between performance, scalability, and user experience.
 
+## Test apk:
+
+[MapsFilterApplication.apk](https://github.com/DindakaDev/map_filter_application/blob/main/MapsFilterApplication.apk)
+
 ## API Keys Required
 
 Add these keys to `secrets.properties`:
