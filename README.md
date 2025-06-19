@@ -50,3 +50,28 @@ In the detail view of each selected item (e.g., country or language), I integrat
 ## Conclusion
 
 After exploring multiple strategies, I chose the Paging Library with SQLite as it offers the best trade-offs in terms of efficiency, maintainability, and user experience. Combined with external APIs for content enrichment, this approach ensures the app remains fast, responsive, and visually engaging while keeping resource usage optimal.
+
+## Screenshots
+
+### Portrait:
+
+<img src="screenshot/Screenshot_20250618_211556.png" alt="My Image" width="500" />
+<img src="screenshot/Screenshot_20250618_211636.png" alt="My Image" width="500" />
+<img src="screenshot/Screenshot_20250618_211656.png" alt="My Image" width="500" />
+<img src="screenshot/Screenshot_20250618_211756.png" alt="My Image" width="500" />
+<img src="screenshot/Screenshot_20250618_211807.png" alt="My Image" width="500" />
+<img src="screenshot/Screenshot_20250618_211921.png" alt="My Image" width="500" />
+
+### Landscape:
+
+<img src="screenshot/Screenshot_20250618_211606.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211625.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211708.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211729.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211747.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211819.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211828.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211849.png" alt="My Image" height="500" />
+<img src="screenshot/Screenshot_20250618_211857.png" alt="My Image" height="500" />
+
+
