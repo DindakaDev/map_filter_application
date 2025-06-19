@@ -4,6 +4,21 @@
 
 This document outlines the approach taken to solve the search problem efficiently within the application. Several strategies were evaluated to determine the best balance between performance, scalability, and user experience.
 
+## API Keys Required
+
+Add these keys to `secrets.properties`:
+
+```properties
+MAPS_API_KEY=your_key_here       # Google Maps API
+GEMINI_API_KEY=your_key_here     # Google Gemini API
+PEXEL_API_KEY=your_key_here      # Pexels API
+```
+
+### How to get them:
+1. [Google Maps](https://console.cloud.google.com) → Enable "Maps SDK" → Create API Key
+2. [Google Gemini](https://aistudio.google.com) → Get API Key
+3. [Pexels](https://www.pexels.com/api) → Sign up → Get Key
+
 ## Approaches Considered
 
 ### 1. Direct Query Without Pagination
