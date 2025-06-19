@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -100,7 +101,7 @@ fun MapDetail(
             )
         }
     }
-    Box {
+    Box(Modifier.testTag("mapContainer")){
         GoogleMap(
             modifier = modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
@@ -127,6 +128,7 @@ fun MapDetail(
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
+                    .testTag("detail_fab")
                     .padding(all = 15.dp)
             ) {
                 Icon(

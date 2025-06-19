@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -18,7 +19,7 @@ import androidx.compose.ui.unit.dp
 fun LoadingComponent(@StringRes text: Int) {
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.Center)) {
-            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally).testTag("loader"))
             Text(
                 stringResource(text),
                 modifier = Modifier.padding(horizontal = 20.dp),

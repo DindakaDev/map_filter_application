@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -102,6 +103,7 @@ fun CitiesListComponent(
             InputFilterComponent(
                 modifier = Modifier
                     .weight(1f)
+                    .testTag("search_field")
                     .padding(end = 8.dp),
                 searchQuery = searchQuery,
                 onSearch = { viewModel.onSearchText(it) }
@@ -212,6 +214,7 @@ fun CityItemComponent(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .fillMaxWidth()
+            .testTag("itemCity")
             .clickable { onItemClick(item) }
     ) {
         Column(
@@ -238,6 +241,7 @@ fun CityItemComponent(
                 }
 
                 IconButton(
+                    modifier = Modifier.testTag("favorite_button_${item.id}"),
                     onClick = { onFavoriteClick(item) }
                 ) {
                     Icon(
@@ -253,7 +257,7 @@ fun CityItemComponent(
             if(!isLandscape()) {
                 TextButton(
                     onClick = { onDetailItemClick?.invoke(item) },
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier.align(Alignment.End).testTag("detail_${item.id}")
                 ) {
                     Text(stringResource(R.string.detail))
                 }
