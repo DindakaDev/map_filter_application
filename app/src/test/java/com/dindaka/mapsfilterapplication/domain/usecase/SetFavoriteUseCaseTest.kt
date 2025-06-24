@@ -42,7 +42,7 @@ class SetFavoriteUseCaseTest{
         useCase.invoke(cityData)
 
         // Then
-        coVerify { repository.updateFavorite(2, true) }
+        coVerify { repository.updateFavorite(1, true) }
     }
 
 }
